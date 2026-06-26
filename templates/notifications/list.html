@@ -1,0 +1,11 @@
+﻿{% extends 'base.html' %}{% block title %}消息中心{% endblock %}{% block content %}
+<h3>消息中心 <span class="badge bg-danger ms-2">{{ unread }} 未读</span></h3>
+<a href="{% url 'mark_all_read' %}" class="btn btn-sm btn-outline-secondary mb-3">全部标为已读</a>
+<div class="list-group">
+{% for n in notifications %}
+<div class="list-group-item {% if not n.is_read %}list-group-item-primary{% endif %}">
+<div class="d-flex justify-content-between"><h6>{{ n.title }}</h6><small>{{ n.created_at|date:'m-d H:i' }}</small></div>
+<p class="mb-1">{{ n.content }}</p><small class="text-muted">{{ n.get_category_display }}</small>
+{% if not n.is_read %}<a href="{% url 'mark_read' n.id %}" class="btn btn-sm btn-link float-end">标为已读</a>{% endif %}
+</div>{% empty %}<p class="text-muted">暂无消息</p>{% endfor %}
+</div>{% endblock %}

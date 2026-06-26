@@ -1,0 +1,5 @@
+﻿{% extends 'base.html' %}{% block title %}黑名单管理{% endblock %}
+{% block content %}<h3>黑名单管理</h3>
+<table class="table"><thead><tr><th>用户</th><th>原因</th><th>天数</th><th>生效</th><th>到期</th><th>状态</th></tr></thead><tbody>
+{% for r in records %}<tr><td>{{ r.user.last_name }}{{ r.user.first_name }}</td><td>{{ r.reason|truncatechars:40 }}</td><td>{% if r.days == 0 %}永久{% else %}{{ r.days }}{% endif %}</td><td>{{ r.started_at|date:'Y-m-d' }}</td><td>{{ r.expired_at|date:'Y-m-d'|default:'永久' }}</td><td>{% if r.removed_at %}已解除{% else %}生效中{% endif %}</td></tr>{% endfor %}
+</tbody></table>{% include 'includes/pagination.html' %}{% endblock %}

@@ -1,0 +1,9 @@
+﻿{% extends 'base.html' %}{% block title %}审核申诉{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-md-6"><div class="card p-4"><h3>审核申诉</h3>
+<p><strong>用户:</strong> {{ appeal.user.last_name }}{{ appeal.user.first_name }}</p>
+<p><strong>违规:</strong> {{ appeal.violation.get_type_display }} (扣{{ appeal.violation.points_deducted }}分)</p>
+<p><strong>理由:</strong> {{ appeal.reason }}</p>
+<form method="post">{% csrf_token %}<div class="mb-3"><label class="form-label">审核意见</label><textarea name="comment" class="form-control" rows="3"></textarea></div>
+<div class="mb-3"><label class="form-label">结果</label><select name="result" class="form-select"><option value="approve">通过 - 撤销违规</option><option value="reject">驳回 - 维持原判</option><option value="partial">部分通过</option></select></div>
+<button type="submit" class="btn btn-primary">提交审核</button></form>
+</div></div></div>{% endblock %}

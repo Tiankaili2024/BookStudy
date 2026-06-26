@@ -1,0 +1,39 @@
+﻿{% extends 'base.html' %}{% block title %}{{ room.name }} - 座位选择{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'room_list' %}">自习室</a></li><li class="breadcrumb-item active">{{ room.building }}{{ room.floor }}F - {{ room.name }}</li></ol></nav>
+<div class="row"><div class="col-lg-8">
+<div class="card p-3"><h5>座位布局 <small class="text-muted">{{ today|date:'Y-m-d' }}</small></h5>
+<div class="d-flex gap-2 mb-3"><span class="badge seat-available px-3 py-2">空闲</span><span class="badge seat-occupied px-3 py-2">已占用</span><span class="badge seat-maintenance px-3 py-2">维修</span></div>
+<div style="overflow-x:auto"><div class="seat-grid" style="grid-template-columns: repeat({{ grid.0|length }}, 1fr);">
+{% for row in grid %}{% for seat in row %}
+  {% if seat %}
+    <div class="seat-cell {% if seat.id in reserved_seat_ids %}seat-occupied{% elif seat.status == 'maintenance' %}seat-maintenance{% else %}seat-available{% endif %}"
+         {% if seat.status == 'available' and seat.id not in reserved_seat_ids %}data-bs-toggle="modal" data-bs-target="#bookModal{{ seat.id }}" style="cursor:pointer"{% endif %}
+         title="{{ seat.seat_number }} ({{ seat.get_seat_type_display }})">
+      {{ seat.seat_number }}
+    </div>
+  {% else %}<div class="seat-cell seat-empty"></div>{% endif %}
+{% endfor %}{% endfor %}</div></div>
+</div></div>
+<div class="col-lg-4"><div class="card p-3">
+<h6><i class="bi bi-clock"></i> 可选时段</h6>
+{% for ts in timeslots %}
+<span class="badge bg-light text-dark border me-2 mb-2 px-3 py-2">{{ ts.name }} {{ ts.start_time|time:'H:i' }}-{{ ts.end_time|time:'H:i' }}</span>
+{% endfor %}</div></div></div>
+
+{% for row in grid %}{% for seat in row %}{% if seat and seat.status == 'available' and seat.id not in reserved_seat_ids %}
+<div class="modal fade" id="bookModal{{ seat.id }}" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5>预约座位 {{ seat.seat_number }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <form method="post" action="{% url 'reservation_create' seat.id today|date:'Y-m-d' %}">
+      {% csrf_token %}
+      <div class="modal-body">
+        <p>{{ seat.get_seat_type_display }}{% for t in seat.tags %} <span class="badge bg-secondary">{% if t == 'window' %}靠窗{% elif t == 'quiet' %}安静角{% else %}{{ t }}{% endif %}</span>{% endfor %}</p>
+        <div class="mb-3"><label class="form-label">开始时间</label><select name="start_time" class="form-select">{% for ts in timeslots %}<option value="{{ ts.start_time|time:'H:i' }}">{{ ts.start_time|time:'H:i' }} {{ ts.name }}</option>{% endfor %}</select></div>
+        <div class="mb-3"><label class="form-label">结束时间</label><select name="end_time" class="form-select">{% for ts in timeslots %}<option value="{{ ts.end_time|time:'H:i' }}">{{ ts.end_time|time:'H:i' }} {{ ts.name }}</option>{% endfor %}</select></div>
+      </div>
+      <div class="modal-footer"><button type="submit" class="btn btn-primary">确认预约</button></div>
+    </form>
+  </div></div></div>
+{% endif %}{% endfor %}{% endfor %}
+{% endblock %}

@@ -1,0 +1,19 @@
+﻿{% extends 'base.html' %}{% block title %}我的预约{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3"><h3>我的预约</h3>
+<div class="btn-group"><a href="?status=" class="btn btn-outline-secondary btn-sm {% if not status_filter %}active{% endif %}">全部</a><a href="?status=confirmed" class="btn btn-outline-primary btn-sm {% if status_filter == 'confirmed' %}active{% endif %}">已确认</a><a href="?status=completed" class="btn btn-outline-success btn-sm {% if status_filter == 'completed' %}active{% endif %}">已完成</a><a href="?status=cancelled" class="btn btn-outline-danger btn-sm {% if status_filter == 'cancelled' %}active{% endif %}">已取消</a></div></div>
+<div class="row g-3">
+{% for r in reservations %}
+<div class="col-md-6 col-lg-4"><div class="card p-3">
+<div class="d-flex justify-content-between">
+  <div><h6>{{ r.seat.room.name }} - {{ r.seat.seat_number }}</h6>
+  <small class="text-muted">{{ r.date|date:'Y-m-d' }} {{ r.start_time|time:'H:i' }}-{{ r.end_time|time:'H:i' }}</small></div>
+  <span class="badge {% if r.status == 'confirmed' %}bg-primary{% elif r.status == 'completed' %}bg-success{% elif r.status == 'cancelled' %}bg-secondary{% elif r.status == 'no_show' %}bg-danger{% endif %}">{{ r.get_status_display }}</span>
+</div>
+{% if r.status == 'confirmed' %}
+<form method="post" action="{% url 'cancel_reservation' r.id %}" class="mt-2">
+{% csrf_token %}<button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('确定取消吗？')">取消预约</button></form>
+{% endif %}
+</div></div>
+{% empty %}<p class="text-muted">暂无预约记录，<a href="{% url 'room_list' %}">去预约</a></p>{% endfor %}
+</div>{% endblock %}

@@ -1,0 +1,5 @@
+﻿{% extends 'base.html' %}{% block title %}删除座位{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-md-6"><div class="card p-4"><h3>确认删除</h3>
+<p>确定要删除座位 <strong>{{ object }}</strong> 吗？</p>
+<form method="post">{% csrf_token %}<button type="submit" class="btn btn-danger">确认删除</button><a href="{% url 'seat_manage' %}" class="btn btn-secondary ms-2">取消</a></form>
+</div></div></div>{% endblock %}

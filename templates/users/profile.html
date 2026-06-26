@@ -1,0 +1,16 @@
+﻿{% extends 'base.html' %}{% block title %}个人中心{% endblock %}
+{% block content %}
+<div class="row"><div class="col-lg-8 mx-auto"><div class="card p-4"><h3>个人中心</h3>
+<table class="table">
+<tr><td>用户名</td><td>{{ profile_user.username }}</td></tr>
+<tr><td>姓名</td><td>{{ profile_user.last_name }}{{ profile_user.first_name }}</td></tr>
+<tr><td>学号/工号</td><td>{{ profile_user.student_id }}</td></tr>
+<tr><td>学院</td><td>{{ profile_user.college }}</td></tr>
+<tr><td>专业</td><td>{{ profile_user.major }}</td></tr>
+<tr><td>邮箱</td><td>{{ profile_user.email }}</td></tr>
+<tr><td>信用分</td><td><span class="badge fs-6 {% if profile_user.credit_score >= 120 %}badge-diamond{% elif profile_user.credit_score >= 100 %}badge-gold{% else %}badge-normal{% endif %}">{{ profile_user.credit_score }}</span></td></tr>
+</table>
+<a href="{% url 'profile_edit' %}" class="btn btn-outline-primary">编辑资料</a>
+<a href="{% url 'my_violations' %}" class="btn btn-outline-warning ms-2">违规记录</a>
+<a href="{% url 'my_credits' %}" class="btn btn-outline-info ms-2">积分明细</a>
+</div></div></div>{% endblock %}

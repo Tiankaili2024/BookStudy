@@ -1,0 +1,7 @@
+﻿{% extends 'base.html' %}{% block title %}申诉{% endblock %}
+{% block content %}<div class="row justify-content-center"><div class="col-md-6"><div class="card p-4"><h3>提交申诉</h3>
+<p>违规类型: {{ violation.get_type_display }} | 扣分: {{ violation.points_deducted }}</p>
+<p>{{ violation.description }}</p>
+<form method="post">{% csrf_token %}<div class="mb-3"><label class="form-label">申诉理由</label><textarea name="reason" class="form-control" rows="4" required></textarea></div>
+<button type="submit" class="btn btn-primary">提交申诉</button><a href="{% url 'my_violations' %}" class="btn btn-secondary ms-2">返回</a></form>
+</div></div></div>{% endblock %}

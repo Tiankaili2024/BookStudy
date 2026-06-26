@@ -1,0 +1,14 @@
+﻿{% extends 'base.html' %}{% block title %}用户管理{% endblock %}
+{% block content %}
+<h3>用户管理</h3>
+<form class="row g-3 mb-4" method="get">
+  <div class="col-md-4"><input type="text" name="search" class="form-control" placeholder="学号/姓名/学院" value="{{ search }}"></div>
+  <div class="col-md-2"><select name="role" class="form-select"><option value="">全部角色</option><option value="student" {% if role_filter == 'student' %}selected{% endif %}>学生</option><option value="front_desk" {% if role_filter == 'front_desk' %}selected{% endif %}>前台</option><option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>管理员</option></select></div>
+  <div class="col-md-2"><button type="submit" class="btn btn-primary">搜索</button></div>
+</form>
+<table class="table table-hover"><thead><tr><th>学号</th><th>姓名</th><th>学院</th><th>角色</th><th>信用分</th><th>状态</th></tr></thead><tbody>
+{% for u in users %}
+<tr><td>{{ u.student_id }}</td><td>{{ u.last_name }}{{ u.first_name }}</td><td>{{ u.college }}</td><td>{{ u.get_role_display }}</td><td>{{ u.credit_score }}</td><td>{{ u.get_status_display }}</td></tr>
+{% endfor %}</tbody></table>
+{% include 'includes/pagination.html' %}
+{% endblock %}

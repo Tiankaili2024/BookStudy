@@ -1,0 +1,30 @@
+﻿{% extends 'base.html' %}{% block title %}全局管理看板{% endblock %}
+{% block content %}
+<h3>全局管理看板</h3>
+<div class="row g-3 mb-4">
+<div class="col-6 col-md-2"><div class="card stat-card"><div class="text-muted small">自习室</div><div class="number" style="color:var(--primary)">{{ total_rooms }}</div></div></div>
+<div class="col-6 col-md-2"><div class="card stat-card"><div class="text-muted small">用户数</div><div class="number" style="color:var(--success)">{{ total_users }}</div></div></div>
+<div class="col-6 col-md-2"><div class="card stat-card"><div class="text-muted small">座位数</div><div class="number" style="color:var(--warning)">{{ total_seats }}</div></div></div>
+<div class="col-6 col-md-2"><div class="card stat-card"><div class="text-muted small">黑名单</div><div class="number" style="color:var(--danger)">{{ banned_count }}</div></div></div>
+<div class="col-6 col-md-2"><div class="card stat-card"><div class="text-muted small">今日预约</div><div class="number" style="color:var(--primary)">{{ today_res }}</div></div></div>
+<div class="col-6 col-md-2"><div class="card stat-card"><div class="text-muted small">活跃用户</div><div class="number" style="color:var(--success)">{{ active_users }}</div></div></div>
+</div>
+<div class="row g-3">
+<div class="col-6 col-md-3"><div class="card stat-card p-3"><div class="text-muted small">爽约率</div><div class="number fs-4" style="color:var(--danger)">{{ noshow_rate }}%</div></div></div>
+<div class="col-6 col-md-3"><div class="card stat-card p-3"><div class="text-muted small">违规率</div><div class="number fs-4" style="color:var(--warning)">{{ violation_rate }}%</div></div></div>
+</div>
+<div class="row g-4 mt-2">
+<div class="col-lg-8"><div class="card p-4"><h5>30天预约趋势</h5><div id="trendChart" style="height:280px"></div></div></div>
+<div class="col-lg-4"><div class="card p-4"><h5>自习室预约排行</h5><div id="roomChart" style="height:280px"></div></div></div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+(function(){
+  var td = JSON.parse('{{ daily_trend|safe }}');
+  echarts.init(document.getElementById('trendChart')).setOption({tooltip:{},xAxis:{data:td.map(function(d){return d.date.slice(5)})},yAxis:{},series:[{type:'line',smooth:true,data:td.map(function(d){return d.count}),areaStyle:{}}]});
+  var rd = JSON.parse('{{ room_compare|safe }}');
+  echarts.init(document.getElementById('roomChart')).setOption({tooltip:{},yAxis:{type:'category',data:rd.map(function(d){return d.name}),axisLabel:{fontSize:10}},xAxis:{},series:[{type:'bar',data:rd.map(function(d){return d.count}),barMaxWidth:20}]});
+})();
+</script>
+{% endblock %}

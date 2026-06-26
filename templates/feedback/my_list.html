@@ -1,0 +1,8 @@
+﻿{% extends 'base.html' %}{% block title %}我的反馈{% endblock %}{% block content %}
+<h3>我的反馈</h3><a href="{% url 'feedback_add' %}" class="btn btn-primary btn-sm mb-3">提交反馈</a>
+{% for f in feedbacks %}
+<div class="card mb-2 p-3"><h6>{{ f.title }} <span class="badge bg-{% if f.status == 'pending' %}warning{% elif f.status == 'resolved' %}success{% else %}secondary{% endif %}">{{ f.get_status_display }}</span></h6>
+<p>{{ f.content|truncatechars:100 }}</p><small>{{ f.created_at|date:'Y-m-d' }}</small>
+{% if f.reply %}<div class="alert alert-info mt-2"><strong>回复：</strong>{{ f.reply }}</div>{% endif %}
+</div>{% empty %}<p class="text-muted">暂无反馈</p>{% endfor %}
+{% include 'includes/pagination.html' %}{% endblock %}

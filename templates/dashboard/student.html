@@ -1,0 +1,37 @@
+﻿{% extends 'base.html' %}{% block title %}我的自习数据{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+<div class="col-6 col-md-3"><div class="card stat-card"><div class="text-muted small">自习总时长</div><div class="number" style="color:var(--primary)">{{ total_hours }}</div><div>小时</div></div></div>
+<div class="col-6 col-md-3"><div class="card stat-card"><div class="text-muted small">出勤率</div><div class="number" style="color:var(--success)">{{ attendance_rate }}%</div></div></div>
+<div class="col-6 col-md-3"><div class="card stat-card"><div class="text-muted small">信用积分</div><div class="number" style="color:var(--warning)">{{ score }}</div></div></div>
+<div class="col-6 col-md-3"><div class="card stat-card"><div class="text-muted small">连续打卡</div><div class="number" style="color:var(--danger)">{{ current_streak }}</div><div>天 (最佳{{ max_streak }}天)</div></div></div>
+</div>
+
+<div class="row g-4">
+<div class="col-lg-8"><div class="card p-4"><h5>学习日历（近30天）</h5><div id="heatmap" style="height:220px"></div></div></div>
+<div class="col-lg-4"><div class="card p-4"><h5>时段分布</h5><div id="periodChart" style="height:220px"></div></div></div>
+</div>
+
+<div class="row g-4 mt-2">
+<div class="col-lg-8"><div class="card p-4"><h5>月度趋势</h5><div id="monthChart" style="height:200px"></div></div></div>
+<div class="col-lg-4"><div class="card p-4"><h5>即将开始</h5>
+{% for r in upcoming %}
+<div class="border-bottom pb-2 mb-2"><strong>{{ r.seat.room.name }} {{ r.seat.seat_number }}</strong><br><small>{{ r.date|date:'m-d' }} {{ r.start_time|time:'H:i' }}-{{ r.end_time|time:'H:i' }}</small></div>
+{% empty %}<p class="text-muted">暂无预约</p>{% endfor %}
+</div></div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+(function(){
+  var dd = JSON.parse('{{ daily_data|safe }}');
+  var dates = dd.map(function(d){return d.date.slice(5)});
+  var vals = dd.map(function(d){return[d.level,d.minutes]});
+  var opt = {tooltip:{formatter:function(p){return p.data[1]+'分钟'}},grid:{top:10,right:20,bottom:10,left:30},xAxis:{data:dates,axisLabel:{fontSize:9}},yAxis:{show:false},visualMap:{min:0,max:4,orient:'horizontal',left:'center',bottom:-5,inRange:{color:['#ebedf0','#9be9a8','#40c463','#30a14e','#216e39']},show:false},series:[{type:'heatmap',data:dd.map(function(d,i){return[i,0,d.level]})}]};
+  echarts.init(document.getElementById('heatmap')).setOption(opt);
+  echarts.init(document.getElementById('periodChart')).setOption({tooltip:{trigger:'item'},series:[{type:'pie',radius:['50%','75%'],data:JSON.parse('{{ period_data|safe }}'),label:{formatter:'{b}\n{d}%'}}]});
+  var md = JSON.parse('{{ months_data|safe }}');
+  echarts.init(document.getElementById('monthChart')).setOption({tooltip:{},xAxis:{data:md.map(function(d){return d.month})},yAxis:{name:'小时'},series:[{type:'bar',data:md.map(function(d){return d.hours}),itemStyle:{color:'#4f46e5'},barMaxWidth:40}]});
+})();
+</script>
+{% endblock %}

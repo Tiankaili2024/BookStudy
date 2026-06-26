@@ -1,0 +1,5 @@
+﻿{% extends 'base.html' %}{% block title %}座位管理{% endblock %}
+{% block content %}<h3>座位管理</h3><a href="{% url 'seat_add' %}" class="btn btn-primary btn-sm mb-3">添加座位</a>
+<table class="table"><thead><tr><th>自习室</th><th>编号</th><th>类型</th><th>状态</th><th>操作</th></tr></thead><tbody>
+{% for s in seats %}<tr><td>{{ s.room.name }}</td><td>{{ s.seat_number }}</td><td>{{ s.get_seat_type_display }}</td><td>{{ s.get_status_display }}</td><td><a href="{% url 'seat_edit' s.pk %}" class="btn btn-sm btn-outline-secondary">编辑</a></td></tr>{% endfor %}
+</tbody></table>{% endblock %}

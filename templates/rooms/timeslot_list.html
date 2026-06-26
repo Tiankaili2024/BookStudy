@@ -1,0 +1,5 @@
+﻿{% extends 'base.html' %}{% block title %}时段管理{% endblock %}
+{% block content %}<h3>时段管理</h3><a href="{% url 'timeslot_add' %}" class="btn btn-primary btn-sm mb-3">添加时段</a>
+<table class="table"><thead><tr><th>自习室</th><th>名称</th><th>开始</th><th>结束</th><th>状态</th></tr></thead><tbody>
+{% for ts in timeslots %}<tr><td>{% if ts.room %}{{ ts.room.name }}{% else %}全局{% endif %}</td><td>{{ ts.name }}</td><td>{{ ts.start_time }}</td><td>{{ ts.end_time }}</td><td>{% if ts.is_active %}启用{% else %}禁用{% endif %}</td></tr>{% endfor %}
+</tbody></table>{% endblock %}

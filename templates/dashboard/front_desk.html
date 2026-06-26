@@ -1,0 +1,34 @@
+﻿{% extends 'base.html' %}{% block title %}前台数据看板{% endblock %}
+{% block content %}
+<h3>自习室数据看板 <small class="text-muted">{{ today|date:'Y-m-d' }}</small></h3>
+<div class="row g-3 mb-4">
+<div class="col-6 col-md-3"><div class="card stat-card"><div class="text-muted small">在座人数</div><div class="number" style="color:var(--success)">{{ occupied }}</div><div>/ {{ total_seats }}</div></div></div>
+<div class="col-6 col-md-3"><div class="card stat-card"><div class="text-muted small">今日预约</div><div class="number" style="color:var(--primary)">{{ total_res }}</div></div></div>
+<div class="col-6 col-md-3"><div class="card stat-card"><div class="text-muted small">已签到</div><div class="number" style="color:var(--success)">{{ checked_in_count }}</div></div></div>
+<div class="col-6 col-md-3"><div class="card stat-card"><div class="text-muted small">爽约</div><div class="number" style="color:var(--danger)">{{ noshow_count }}</div></div></div>
+</div>
+
+<div class="row g-4">
+<div class="col-lg-8"><div class="card p-4"><h5>今日各时段在座人数</h5><div id="hourlyChart" style="height:250px"></div></div></div>
+<div class="col-lg-4"><div class="card p-4"><h5>各自习室利用率</h5><div id="roomChart" style="height:250px"></div></div></div>
+</div>
+
+{% if violation_by_type %}
+<div class="card p-4 mt-4"><h5>本周违规统计</h5>
+<table class="table table-sm"><thead><tr><th>类型</th><th>次数</th></tr></thead><tbody id="violationTable"></tbody></table></div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}
+<script>
+(function(){
+  var hd = JSON.parse('{{ hourly_data|safe }}');
+  echarts.init(document.getElementById('hourlyChart')).setOption({tooltip:{},xAxis:{data:hd.map(function(d){return d.hour})},yAxis:{name:'人'},series:[{type:'line',smooth:true,data:hd.map(function(d){return d.count}),areaStyle:{}}]});
+  var rd = JSON.parse('{{ room_stats|safe }}');
+  echarts.init(document.getElementById('roomChart')).setOption({tooltip:{},yAxis:{type:'category',data:rd.map(function(d){return d.name}),axisLabel:{fontSize:11}},xAxis:{name:'%'},series:[{type:'bar',data:rd.map(function(d){return d.rate}),label:{show:true,position:'right',formatter:'{c}%'},barMaxWidth:20}]});
+  var vt = JSON.parse('{{ violation_by_type|safe }}');
+  var typeMap = {no_show:'爽约',late:'迟到',severe_late:'严重迟到',ghost_occupation:'占座不用',proxy:'代签',disorder:'扰乱秩序',damage:'损坏设施',temp_leave_timeout:'暂离超时',item_left:'物品遗留'};
+  var html=''; for(var i=0;i<vt.length;i++){html+='<tr><td>'+ (typeMap[vt[i].type]||vt[i].type) +'</td><td>'+vt[i].cnt+'</td></tr>'}
+  document.getElementById('violationTable').innerHTML=html;
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,6 @@
+﻿{% extends 'base.html' %}{% block title %}违规记录{% endblock %}{% block content %}
+<h3>我的违规记录</h3>
+<table class="table"><thead><tr><th>时间</th><th>类型</th><th>扣分</th><th>状态</th><th>操作</th></tr></thead><tbody>
+{% for v in violations %}<tr><td>{{ v.created_at|date:'Y-m-d H:i' }}</td><td>{{ v.get_type_display }}</td><td>{{ v.points_deducted }}</td><td>{{ v.get_status_display }}</td><td>{% if v.status == 'confirmed' %}<a href="{% url 'submit_appeal' v.id %}" class="btn btn-sm btn-outline-primary">申诉</a>{% else %}-{% endif %}</td></tr>
+{% empty %}<tr><td colspan="5" class="text-muted">暂无违规记录</td></tr>{% endfor %}
+</tbody></table>{% endblock %}

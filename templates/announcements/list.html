@@ -1,0 +1,7 @@
+﻿{% extends 'base.html' %}{% block title %}公告{% endblock %}{% block content %}
+<h3>公告</h3>
+{% for a in announcements %}
+<div class="card mb-2 p-3"><h5>{% if a.is_pinned %}<i class="bi bi-pin-angle-fill text-danger"></i> {% endif %}{{ a.title }}</h5>
+<p>{{ a.content|truncatechars:200 }}</p><small class="text-muted">{{ a.created_at|date:'Y-m-d' }} by {{ a.created_by.last_name }}{{ a.created_by.first_name }}</small></div>
+{% empty %}<p class="text-muted">暂无公告</p>{% endfor %}
+{% include 'includes/pagination.html' %}{% endblock %}

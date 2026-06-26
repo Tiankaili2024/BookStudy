@@ -1,0 +1,5 @@
+﻿{% extends 'base.html' %}{% block title %}申诉管理{% endblock %}
+{% block content %}<h3>申诉管理</h3>
+<table class="table"><thead><tr><th>用户</th><th>违规类型</th><th>理由</th><th>状态</th><th>操作</th></tr></thead><tbody>
+{% for a in appeals %}<tr><td>{{ a.user.last_name }}{{ a.user.first_name }}</td><td>{{ a.violation.get_type_display }}</td><td>{{ a.reason|truncatechars:50 }}</td><td>{{ a.get_status_display }}</td><td>{% if a.status == 'pending' %}<a href="{% url 'review_appeal' a.id %}" class="btn btn-sm btn-primary">审核</a>{% else %}-{% endif %}</td></tr>{% endfor %}
+</tbody></table>{% include 'includes/pagination.html' %}{% endblock %}
